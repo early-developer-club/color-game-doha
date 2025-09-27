@@ -75,11 +75,13 @@ body {
     color: #999;
     font-weight: 400;
     opacity: 1;
+    transition: all 0.3s ease;
+    transform: translateX(0);
 }
 
 .nickname-input input:focus::placeholder {
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transform: translateX(-10px);
 }
 
 .start-btn {
