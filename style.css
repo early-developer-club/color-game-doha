@@ -67,6 +67,19 @@ body {
 .nickname-input input:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    text-align: left;
+    padding-left: 20px;
+}
+
+.nickname-input input::placeholder {
+    color: #999;
+    font-weight: 400;
+    opacity: 1;
+}
+
+.nickname-input input:focus::placeholder {
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .start-btn {
