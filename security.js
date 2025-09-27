@@ -14,7 +14,7 @@ class SecurityManager {
     }
     
     initSecurity() {
-        this.detectDevTools();
+        // this.detectDevTools(); // 개발자 도구 감지 비활성화
         this.preventCommonHacks();
         this.setupIntegrityChecks();
         this.monitorGameplay();
@@ -106,49 +106,14 @@ class SecurityManager {
         this.devToolsOpen = true;
         this.susiciousActivity++;
         
-        // 경고 메시지
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            font-family: Arial, sans-serif;
-        `;
+        // 조용히 로그만 남기고 게임은 계속 진행
+        console.warn('Developer tools detected, but allowing game to continue');
         
-        overlay.innerHTML = `
-            <h2>⚠️ 보안 경고</h2>
-            <p>개발자 도구가 감지되었습니다.</p>
-            <p>공정한 게임 플레이를 위해 개발자 도구를 닫아주세요.</p>
-            <button onclick="location.reload()" style="
-                padding: 10px 20px;
-                margin-top: 20px;
-                background: #667eea;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-            ">게임 다시 시작</button>
-        `;
-        
-        document.body.appendChild(overlay);
-        
-        // 게임 중단
-        if (window.game) {
-            window.game.gameRunning = false;
-            clearInterval(window.game.timerInterval);
-        }
-        
-        console.clear();
-        console.log('%c⚠️ 개발자 도구가 감지되었습니다!', 'color: red; font-size: 20px; font-weight: bold;');
+        // 게임 중단하지 않음 - 주석 처리
+        // if (window.game) {
+        //     window.game.gameRunning = false;
+        //     clearInterval(window.game.timerInterval);
+        // }
     }
     
     // 일반적인 해킹 시도 방지
@@ -315,11 +280,10 @@ class SecurityManager {
             return false;
         }
         
-        // 개발자 도구 감지는 경고만 하고 차단하지 않음
-        if (this.devToolsOpen) {
-            console.warn('Developer tools were detected during game');
-            // return false; // 주석 처리하여 차단하지 않음
-        }
+        // 개발자 도구 체크 완전 제거
+        // if (this.devToolsOpen) {
+        //     console.warn('Developer tools were detected during game');
+        // }
         
         // 레벨당 최소 시간 체크 (평균 3초)
         const minTimePerLevel = level * 3000;
