@@ -57,6 +57,17 @@
                     <input type="text" id="nicknameInput" placeholder="닉네임을 입력하세요" maxlength="10">
                 </div>
                 <button class="start-btn" onclick="startGameWithNickname()">게임 시작</button>
+                <button class="leaderboard-btn" onclick="showLeaderboard()">랭킹 보기</button>
+            </div>
+        </div>
+
+        <div class="leaderboard-screen" id="leaderboardScreen" style="display: none;">
+            <div class="leaderboard-content">
+                <h2>🏆 랭킹</h2>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <div class="loading">랭킹을 불러오는 중...</div>
+                </div>
+                <button class="back-btn" onclick="hideLeaderboard()">돌아가기</button>
             </div>
         </div>
 
@@ -71,7 +82,10 @@
             <h2>게임 종료!</h2>
             <p class="player-name">플레이어: <span id="playerName">-</span></p>
             <p class="final-score">Level: <span id="finalLevel">0</span></p>
-            <button class="restart-btn" onclick="restartGame()">다시 시작</button>
+            <div class="game-over-buttons">
+                <button class="restart-btn" onclick="restartGame()">다시 시작</button>
+                <button class="leaderboard-btn" onclick="showLeaderboard()">랭킹 보기</button>
+            </div>
         </div>
     </div>
 

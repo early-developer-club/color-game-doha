@@ -152,7 +152,34 @@ class ColorGame {
         clearInterval(this.timerInterval);
         this.finalLevelEl.textContent = this.level;
         this.playerNameEl.textContent = this.playerName || '무명';
+        
+        // 점수 저장
+        this.saveScore();
+        
         this.gameOverEl.style.display = 'flex';
+    }
+    
+    async saveScore() {
+        try {
+            const response = await fetch('/api/leaderboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    player_name: this.playerName || '무명',
+                    level_reached: this.level
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to save score');
+            }
+            
+            console.log('Score saved successfully');
+        } catch (error) {
+            console.error('Error saving score:', error);
+        }
     }
     
     resetGame() {
@@ -202,6 +229,81 @@ function restartGame() {
     if (game) {
         game.resetGame();
     }
+}
+
+async function showLeaderboard() {
+    const startScreen = document.getElementById('startScreen');
+    const gameOverScreen = document.getElementById('gameOver');
+    const leaderboardScreen = document.getElementById('leaderboardScreen');
+    const leaderboardList = document.getElementById('leaderboardList');
+    
+    // 화면 전환
+    startScreen.style.display = 'none';
+    gameOverScreen.style.display = 'none';
+    leaderboardScreen.style.display = 'block';
+    
+    // 로딩 표시
+    leaderboardList.innerHTML = '<div class="loading">랭킹을 불러오는 중...</div>';
+    
+    try {
+        const response = await fetch('/api/leaderboard');
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch leaderboard');
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.data.length > 0) {
+            renderLeaderboard(result.data);
+        } else {
+            leaderboardList.innerHTML = '<div class="loading">아직 기록이 없습니다.</div>';
+        }
+    } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+        leaderboardList.innerHTML = '<div class="error">랭킹을 불러오는데 실패했습니다.</div>';
+    }
+}
+
+function renderLeaderboard(data) {
+    const leaderboardList = document.getElementById('leaderboardList');
+    
+    if (data.length === 0) {
+        leaderboardList.innerHTML = '<div class="loading">아직 기록이 없습니다.</div>';
+        return;
+    }
+    
+    const html = data.map((item, index) => {
+        const rank = index + 1;
+        const rankClass = rank <= 3 ? `rank-${rank}` : '';
+        const date = new Date(item.created_at).toLocaleDateString('ko-KR', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `
+            <div class="leaderboard-item ${rankClass}">
+                <div class="rank">${rank}</div>
+                <div class="player-info">
+                    <div class="name">${item.player_name}</div>
+                    <div class="date">${date}</div>
+                </div>
+                <div class="level">Level ${item.level_reached}</div>
+            </div>
+        `;
+    }).join('');
+    
+    leaderboardList.innerHTML = html;
+}
+
+function hideLeaderboard() {
+    const startScreen = document.getElementById('startScreen');
+    const leaderboardScreen = document.getElementById('leaderboardScreen');
+    
+    leaderboardScreen.style.display = 'none';
+    startScreen.style.display = 'block';
 }
 
 // 페이지 로드 시 게임 객체 생성
