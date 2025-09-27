@@ -75,13 +75,21 @@ body {
     color: #999;
     font-weight: 400;
     opacity: 1;
-    transition: all 0.3s ease;
-    transform: translateX(0);
 }
 
 .nickname-input input:focus::placeholder {
     opacity: 0;
-    transform: translateX(-10px);
+}
+
+.start-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.start-content .nickname-input {
+    margin-bottom: 0;
 }
 
 .start-btn {
@@ -95,7 +103,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Noto Sans KR', sans-serif;
-    min-width: 140px;
+    min-width: 200px;
 }
 
 .start-btn:hover {
@@ -114,15 +122,14 @@ body {
     background: linear-gradient(45deg, #4ECDC4, #44A08D);
     color: white;
     border: none;
-    padding: 12px 30px;
-    font-size: 1rem;
+    padding: 15px 40px;
+    font-size: 1.2rem;
     font-weight: 500;
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Noto Sans KR', sans-serif;
-    margin-top: 15px;
-    min-width: 120px;
+    min-width: 200px;
 }
 
 .leaderboard-btn:hover {
@@ -154,6 +161,10 @@ body {
     padding: 20px 0;
 }
 
+.leaderboard-screen .header {
+    display: none;
+}
+
 .leaderboard-content h2 {
     font-size: 1.8rem;
     font-weight: 600;
@@ -162,9 +173,28 @@ body {
 }
 
 .leaderboard-list {
-    max-height: 400px;
+    max-height: 350px;
     overflow-y: auto;
     margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+.leaderboard-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb:hover {
+    background: #5a6fd8;
 }
 
 .leaderboard-item {
