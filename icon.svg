@@ -1,0 +1,55 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tile1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8E8E;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tile2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ECDC4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6ED5CD;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tile3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#45B7D1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#67C3DA;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="tile4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F7DC6F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F9E79F;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)" filter="url(#shadow)"/>
+  
+  <!-- Game grid (2x2) -->
+  <g transform="translate(256, 256)">
+    <!-- Top left tile -->
+    <rect x="-80" y="-80" width="70" height="70" rx="12" fill="url(#tile1)" filter="url(#shadow)"/>
+    
+    <!-- Top right tile -->
+    <rect x="10" y="-80" width="70" height="70" rx="12" fill="url(#tile2)" filter="url(#shadow)"/>
+    
+    <!-- Bottom left tile -->
+    <rect x="-80" y="10" width="70" height="70" rx="12" fill="url(#tile3)" filter="url(#shadow)"/>
+    
+    <!-- Bottom right tile (special/different) -->
+    <rect x="10" y="10" width="70" height="70" rx="12" fill="url(#tile4)" filter="url(#shadow)"/>
+    
+    <!-- Highlight ring on the different tile -->
+    <rect x="5" y="5" width="80" height="80" rx="16" fill="none" stroke="#FFD700" stroke-width="4" opacity="0.8"/>
+  </g>
+  
+  <!-- Eye icon to represent "vision/sight" -->
+  <g transform="translate(256, 160)">
+    <ellipse cx="0" cy="0" rx="25" ry="15" fill="white" opacity="0.9"/>
+    <circle cx="0" cy="0" r="8" fill="#333"/>
+    <circle cx="3" cy="-3" r="3" fill="white" opacity="0.8"/>
+  </g>
+</svg>
