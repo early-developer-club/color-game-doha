@@ -1,6 +1,6 @@
 // 환경변수에서 민감한 정보 가져오기 (Vercel에서 설정)
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://***REMOVED***.supabase.co';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '***REMOVED***';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://zgexmghxobuavibcgwrm.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpnZXhtZ2h4b2J1YXZpYmNnd3JtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5NTE4NzcsImV4cCI6MjA3NDUyNzg3N30.QctvITPlg4agYRQL2KoFzVD32QHh122B3L2iRqKBHQk';
 
 // Rate limiting을 위한 간단한 메모리 저장소
 const requestCounts = new Map();
