@@ -1,0 +1,13 @@
+{
+  "name": "color-game-doha",
+  "version": "1.0.0",
+  "description": "절대색감 게임 - 색상 구별 게임",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "dev": "python3 -m http.server 3000"
+  },
+  "keywords": ["game", "color", "puzzle", "web"],
+  "author": "doha",
+  "license": "MIT"
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>절대색감 게임</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">절대색감</h1>
+            <div class="timer-container">
+                <div class="timer-bar">
+                    <div class="timer-fill"></div>
+                </div>
+                <div class="timer-text">60초</div>
+            </div>
+        </header>
+
+        <main class="game-area">
+            <div class="countdown" id="countdown">3</div>
+            <div class="score">Level: <span id="level">1</span></div>
+            <div class="game-grid" id="gameGrid"></div>
+            <div class="message" id="message"></div>
+        </main>
+
+        <div class="game-over" id="gameOver" style="display: none;">
+            <h2>게임 종료!</h2>
+            <p>Level: <span id="finalLevel">0</span></p>
+            <button class="restart-btn" onclick="startGame()">다시 시작</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
