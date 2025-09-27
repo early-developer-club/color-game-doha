@@ -127,7 +127,38 @@ export default async function handler(req, res) {
   // POST: 점수 저장
   if (req.method === 'POST') {
     try {
-      const { player_name, level_reached } = req.body;
+      const { player_name, level_reached, integrity_token, timestamp } = req.body;
+
+      // 무결성 토큰 검증 (선택적)
+      if (integrity_token && timestamp) {
+        const tokenAge = Date.now() - timestamp;
+        // 토큰이 10분 이상 오래된 경우 거부
+        if (tokenAge > 600000) {
+          return res.status(400).json({
+            success: false,
+            error: 'Request too old'
+          });
+        }
+        
+        // 기본적인 토큰 검증 (더 강화 가능)
+        const userAgent = req.headers['x-user-agent'] || '';
+        const expectedData = JSON.stringify({ player_name, level_reached });
+        const expectedToken = Buffer.from(expectedData + timestamp + userAgent.slice(0, 10)).toString('base64');
+        
+        if (integrity_token !== expectedToken) {
+          console.warn('Invalid integrity token detected');
+          // 엄격하게 차단하지 않고 경고만 로그
+        }
+      }
+
+      // 추가 헤더 검증
+      const gameVersion = req.headers['x-game-version'];
+      if (gameVersion && gameVersion !== '1.0.0') {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid game version'
+        });
+      }
 
       // 입력값 검증 및 살니티제이션
       const { sanitizedName, validLevel } = validateAndSanitizeInput(player_name, level_reached);
@@ -138,6 +169,18 @@ export default async function handler(req, res) {
           success: false,
           error: 'Invalid level detected'
         });
+      }
+
+      // 레벨별 최소 시간 체크 (타임스탬프가 있는 경우)
+      if (timestamp && validLevel > 5) {
+        const gameTime = Date.now() - timestamp;
+        const minTime = validLevel * 2000; // 레벨당 최소 2초
+        if (gameTime < minTime) {
+          return res.status(400).json({
+            success: false,
+            error: 'Game completed too quickly'
+          });
+        }
       }
 
       const response = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {

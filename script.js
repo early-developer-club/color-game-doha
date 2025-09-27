@@ -160,6 +160,12 @@ class ColorGame {
     }
     
     async saveScore() {
+        // 보안 검증 (security.js가 로드된 경우)
+        if (window.security && !window.security.validateGameCompletion(this.level, this.playerName)) {
+            console.warn('Game integrity validation failed, not saving score');
+            return;
+        }
+        
         // 비정상적인 점수 체크
         if (this.level < 1 || this.level > 50) {
             console.warn('Invalid level detected, not saving score');
@@ -176,15 +182,26 @@ class ColorGame {
                 return;
             }
             
+            // 무결성 토큰 생성 (security.js가 로드된 경우)
+            const requestData = {
+                player_name: sanitizedName,
+                level_reached: this.level
+            };
+            
+            if (window.security) {
+                const integrity = window.security.generateIntegrityToken(requestData);
+                requestData.integrity_token = integrity.token;
+                requestData.timestamp = integrity.timestamp;
+            }
+            
             const response = await fetch('/api/leaderboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-Game-Version': '1.0.0',
+                    'X-User-Agent': navigator.userAgent.slice(0, 50)
                 },
-                body: JSON.stringify({
-                    player_name: sanitizedName,
-                    level_reached: this.level
-                })
+                body: JSON.stringify(requestData)
             });
             
             const result = await response.json();
