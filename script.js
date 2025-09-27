@@ -39,8 +39,14 @@ class ColorGame {
         
         const baseColor = `hsl(${baseHue}, ${baseSaturation}%, ${baseLightness}%)`;
         
-        // 레벨이 올라갈수록 색상 차이를 줄임
-        const maxDifference = Math.max(30 - level * 2, 3);
+        // 20레벨까지는 완만하게, 그 이후 급격히 어려워짐
+        let maxDifference;
+        if (level <= 20) {
+            maxDifference = Math.max(30 - level * 1, 8); // 완만한 감소
+        } else {
+            const extraDifficulty = (level - 20) * 2; // 20레벨 후 급격한 증가
+            maxDifference = Math.max(10 - extraDifficulty, 2); // 최소 2까지
+        }
         const hueDiff = Math.random() * maxDifference;
         const satDiff = Math.random() * (maxDifference / 2);
         const lightDiff = Math.random() * (maxDifference / 2);
@@ -88,6 +94,7 @@ class ColorGame {
                 this.levelEl.textContent = this.level;
                 this.createGrid(this.level);
                 this.messageEl.textContent = '';
+                this.messageEl.className = 'message'; // 클래스도 초기화
                 this.gameGridEl.classList.add('show');
             }, 1000);
         } else {
@@ -97,6 +104,7 @@ class ColorGame {
             setTimeout(() => {
                 tile.classList.remove('wrong');
                 this.messageEl.textContent = '';
+                this.messageEl.className = 'message'; // 클래스도 초기화
             }, 1500);
         }
     }
@@ -310,11 +318,17 @@ async function showLeaderboard() {
     const gameOverScreen = document.getElementById('gameOver');
     const leaderboardScreen = document.getElementById('leaderboardScreen');
     const leaderboardList = document.getElementById('leaderboardList');
+    const headerEl = document.querySelector('.header');
     
     // 화면 전환
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
     leaderboardScreen.style.display = 'block';
+    
+    // 타이머 UI 완전 숨김
+    if (headerEl) {
+        headerEl.style.display = 'none';
+    }
     
     // 로딩 표시
     leaderboardList.innerHTML = '<div class="loading">랭킹을 불러오는 중...</div>';
@@ -375,9 +389,15 @@ function renderLeaderboard(data) {
 function hideLeaderboard() {
     const startScreen = document.getElementById('startScreen');
     const leaderboardScreen = document.getElementById('leaderboardScreen');
+    const headerEl = document.querySelector('.header');
     
     leaderboardScreen.style.display = 'none';
     startScreen.style.display = 'block';
+    
+    // 타이머 UI 다시 보이게 하기
+    if (headerEl) {
+        headerEl.style.display = 'block';
+    }
 }
 
 // 페이지 로드 시 게임 객체 생성
