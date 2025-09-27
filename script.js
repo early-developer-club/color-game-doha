@@ -5,11 +5,15 @@ class ColorGame {
         this.gameRunning = false;
         this.timerInterval = null;
         this.correctTileIndex = 0;
+        this.playerName = '';
         
         this.initializeElements();
     }
     
     initializeElements() {
+        this.startScreenEl = document.getElementById('startScreen');
+        this.gameAreaEl = document.getElementById('gameArea');
+        this.nicknameInputEl = document.getElementById('nicknameInput');
         this.countdownEl = document.getElementById('countdown');
         this.gameGridEl = document.getElementById('gameGrid');
         this.messageEl = document.getElementById('message');
@@ -18,6 +22,7 @@ class ColorGame {
         this.timerTextEl = document.querySelector('.timer-text');
         this.gameOverEl = document.getElementById('gameOver');
         this.finalLevelEl = document.getElementById('finalLevel');
+        this.playerNameEl = document.getElementById('playerName');
     }
     
     getGridSize(level) {
@@ -146,6 +151,7 @@ class ColorGame {
         this.gameRunning = false;
         clearInterval(this.timerInterval);
         this.finalLevelEl.textContent = this.level;
+        this.playerNameEl.textContent = this.playerName || '무명';
         this.gameOverEl.style.display = 'flex';
     }
     
@@ -161,22 +167,51 @@ class ColorGame {
         this.messageEl.textContent = '';
         this.gameGridEl.classList.remove('show');
         this.gameOverEl.style.display = 'none';
+        this.gameAreaEl.style.display = 'none';
+        this.startScreenEl.style.display = 'block';
         this.countdownEl.style.display = 'block';
+        this.nicknameInputEl.value = '';
+    }
+    
+    startWithNickname(nickname) {
+        this.playerName = nickname;
+        this.startScreenEl.style.display = 'none';
+        this.gameAreaEl.style.display = 'block';
+        this.startCountdown();
     }
 }
 
 let game;
 
-function startGame() {
-    if (game) {
-        game.resetGame();
-    } else {
+function startGameWithNickname() {
+    const nickname = document.getElementById('nicknameInput').value.trim();
+    
+    if (!nickname) {
+        alert('닉네임을 입력해주세요!');
+        return;
+    }
+    
+    if (!game) {
         game = new ColorGame();
     }
-    game.startCountdown();
+    
+    game.startWithNickname(nickname);
 }
 
-// 페이지 로드 시 게임 시작
+function restartGame() {
+    if (game) {
+        game.resetGame();
+    }
+}
+
+// 페이지 로드 시 게임 객체 생성
 document.addEventListener('DOMContentLoaded', () => {
-    startGame();
+    game = new ColorGame();
+    
+    // Enter 키로도 게임 시작 가능
+    document.getElementById('nicknameInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            startGameWithNickname();
+        }
+    });
 });

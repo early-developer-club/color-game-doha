@@ -28,6 +28,73 @@ body {
     margin-bottom: 30px;
 }
 
+.start-screen {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.start-content h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.start-content p {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.nickname-input {
+    margin-bottom: 25px;
+}
+
+.nickname-input input {
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 25px;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+    text-align: center;
+}
+
+.nickname-input input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.start-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+    min-width: 140px;
+}
+
+.start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.start-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .title {
     font-size: 2.5rem;
     font-weight: 700;
@@ -191,7 +258,14 @@ body {
     color: #fff;
 }
 
-.game-over p {
+.game-over .player-name {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #fff;
+    font-weight: 500;
+}
+
+.game-over .final-score {
     font-size: 1.5rem;
     margin-bottom: 30px;
     color: #ccc;

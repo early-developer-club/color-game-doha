@@ -19,7 +19,18 @@
             </div>
         </header>
 
-        <main class="game-area">
+        <div class="start-screen" id="startScreen">
+            <div class="start-content">
+                <h2>게임을 시작해보세요!</h2>
+                <p>미세한 색상 차이를 구별하는 게임입니다</p>
+                <div class="nickname-input">
+                    <input type="text" id="nicknameInput" placeholder="닉네임을 입력하세요" maxlength="10">
+                </div>
+                <button class="start-btn" onclick="startGameWithNickname()">게임 시작</button>
+            </div>
+        </div>
+
+        <main class="game-area" id="gameArea" style="display: none;">
             <div class="countdown" id="countdown">3</div>
             <div class="score">Level: <span id="level">1</span></div>
             <div class="game-grid" id="gameGrid"></div>
@@ -28,8 +39,9 @@
 
         <div class="game-over" id="gameOver" style="display: none;">
             <h2>게임 종료!</h2>
-            <p>Level: <span id="finalLevel">0</span></p>
-            <button class="restart-btn" onclick="startGame()">다시 시작</button>
+            <p class="player-name">플레이어: <span id="playerName">-</span></p>
+            <p class="final-score">Level: <span id="finalLevel">0</span></p>
+            <button class="restart-btn" onclick="restartGame()">다시 시작</button>
         </div>
     </div>
 
