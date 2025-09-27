@@ -1,5 +1,11 @@
-const SUPABASE_URL = 'https://***REMOVED***.supabase.co';
-const SUPABASE_ANON_KEY = '***REMOVED***';
+// 환경변수에서 민감한 정보 가져오기 (Vercel에서 설정)
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://***REMOVED***.supabase.co';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '***REMOVED***';
+
+// Rate limiting을 위한 간단한 메모리 저장소
+const requestCounts = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1분
+const MAX_REQUESTS_PER_WINDOW = 10; // 1분에 최대 10회
 
 // CORS 헤더
 const corsHeaders = {
@@ -8,10 +14,84 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
+// 입력 값 검증 및 살니티제이션
+function validateAndSanitizeInput(playerName, levelReached) {
+  // 플레이어 이름 검증
+  if (!playerName || typeof playerName !== 'string') {
+    throw new Error('Invalid player name');
+  }
+  
+  // 레벨 검증
+  if (!levelReached || typeof levelReached !== 'number' || levelReached < 1 || levelReached > 1000) {
+    throw new Error('Invalid level reached');
+  }
+  
+  // 플레이어 이름 살니티제이션
+  const sanitizedName = playerName
+    .trim()
+    .substring(0, 50)
+    .replace(/[<>\"'&]/g, '') // XSS 방지
+    .replace(/\s+/g, ' '); // 연속 공백 제거
+  
+  if (sanitizedName.length === 0) {
+    throw new Error('Player name cannot be empty');
+  }
+  
+  return {
+    sanitizedName,
+    validLevel: Math.floor(levelReached)
+  };
+}
+
+// Rate limiting 체크
+function checkRateLimit(identifier) {
+  const now = Date.now();
+  const userRequests = requestCounts.get(identifier) || [];
+  
+  // 시간 윈도우 밖의 요청들 제거
+  const validRequests = userRequests.filter(time => now - time < RATE_LIMIT_WINDOW);
+  
+  if (validRequests.length >= MAX_REQUESTS_PER_WINDOW) {
+    return false; // Rate limit 초과
+  }
+  
+  // 새 요청 추가
+  validRequests.push(now);
+  requestCounts.set(identifier, validRequests);
+  
+  return true;
+}
+
+// IP 주소 가져오기
+function getClientIP(req) {
+  return req.headers['x-forwarded-for'] || 
+         req.headers['x-real-ip'] || 
+         req.connection.remoteAddress || 
+         'unknown';
+}
+
 export default async function handler(req, res) {
+  // 모든 응답에 CORS 헤더 추가
+  Object.keys(corsHeaders).forEach(key => {
+    res.setHeader(key, corsHeaders[key]);
+  });
+
+  // 클라이언트 IP 주소 가져오기
+  const clientIP = getClientIP(req);
+  
   // CORS preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).json({});
+  }
+
+  // Rate limiting 체크 (POST 요청만)
+  if (req.method === 'POST') {
+    if (!checkRateLimit(clientIP)) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many requests. Please try again later.'
+      });
+    }
   }
 
   // GET: 랭킹 조회
@@ -49,10 +129,14 @@ export default async function handler(req, res) {
     try {
       const { player_name, level_reached } = req.body;
 
-      if (!player_name || !level_reached) {
+      // 입력값 검증 및 살니티제이션
+      const { sanitizedName, validLevel } = validateAndSanitizeInput(player_name, level_reached);
+
+      // 비정상적으로 높은 레벨 체크 (스팸/해킹 방지)
+      if (validLevel > 50) {
         return res.status(400).json({
           success: false,
-          error: 'Player name and level are required'
+          error: 'Invalid level detected'
         });
       }
 
@@ -65,12 +149,14 @@ export default async function handler(req, res) {
           'Prefer': 'return=representation'
         },
         body: JSON.stringify({
-          player_name: player_name.trim().substring(0, 50),
-          level_reached: parseInt(level_reached)
+          player_name: sanitizedName,
+          level_reached: validLevel
         })
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Supabase error:', errorText);
         throw new Error('Failed to save score');
       }
 
@@ -82,9 +168,14 @@ export default async function handler(req, res) {
       });
     } catch (error) {
       console.error('Error saving score:', error);
-      return res.status(500).json({
+      
+      // 에러 메시지 필터링 (민감한 정보 노출 방지)
+      const safeErrorMessage = error.message.includes('Invalid') ? 
+        error.message : 'Failed to save score';
+      
+      return res.status(400).json({
         success: false,
-        error: 'Failed to save score'
+        error: safeErrorMessage
       });
     }
   }

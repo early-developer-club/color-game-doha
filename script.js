@@ -160,25 +160,48 @@ class ColorGame {
     }
     
     async saveScore() {
+        // 비정상적인 점수 체크
+        if (this.level < 1 || this.level > 50) {
+            console.warn('Invalid level detected, not saving score');
+            return;
+        }
+        
         try {
+            // 플레이어 이름 추가 검증
+            const playerName = this.playerName || '무명';
+            const sanitizedName = playerName.trim().substring(0, 50);
+            
+            if (!sanitizedName) {
+                console.warn('Invalid player name, not saving score');
+                return;
+            }
+            
             const response = await fetch('/api/leaderboard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    player_name: this.playerName || '무명',
+                    player_name: sanitizedName,
                     level_reached: this.level
                 })
             });
             
+            const result = await response.json();
+            
             if (!response.ok) {
-                throw new Error('Failed to save score');
+                if (response.status === 429) {
+                    console.warn('Rate limit exceeded');
+                } else {
+                    console.error('Failed to save score:', result.error);
+                }
+                return;
             }
             
             console.log('Score saved successfully');
         } catch (error) {
             console.error('Error saving score:', error);
+            // 네트워크 오류는 조용히 처리 (사용자 경험 저해 방지)
         }
     }
     
@@ -210,19 +233,53 @@ class ColorGame {
 
 let game;
 
-function startGameWithNickname() {
-    const nickname = document.getElementById('nicknameInput').value.trim();
+// 입력값 검증 및 살니티제이션 함수
+function validateAndSanitizeNickname(nickname) {
+    if (!nickname || typeof nickname !== 'string') {
+        throw new Error('닉네임을 입력해주세요!');
+    }
     
-    if (!nickname) {
-        alert('닉네임을 입력해주세요!');
+    const sanitized = nickname
+        .trim()
+        .substring(0, 50)
+        .replace(/[<>\"'&]/g, '') // XSS 방지
+        .replace(/\s+/g, ' '); // 연속 공백 제거
+    
+    if (sanitized.length === 0) {
+        throw new Error('유효한 닉네임을 입력해주세요!');
+    }
+    
+    if (sanitized.length < 2) {
+        throw new Error('닉네임은 2글자 이상이어야 합니다!');
+    }
+    
+    // 욕설 필터링 (간단한 예시)
+    const bannedWords = ['admin', 'test', '관리자', 'null', 'undefined'];
+    const lowerName = sanitized.toLowerCase();
+    
+    for (const word of bannedWords) {
+        if (lowerName.includes(word)) {
+            throw new Error('사용할 수 없는 닉네임입니다!');
+        }
+    }
+    
+    return sanitized;
+}
+
+function startGameWithNickname() {
+    try {
+        const nickname = document.getElementById('nicknameInput').value;
+        const sanitizedNickname = validateAndSanitizeNickname(nickname);
+        
+        if (!game) {
+            game = new ColorGame();
+        }
+        
+        game.startWithNickname(sanitizedNickname);
+    } catch (error) {
+        alert(error.message);
         return;
     }
-    
-    if (!game) {
-        game = new ColorGame();
-    }
-    
-    game.startWithNickname(nickname);
 }
 
 function restartGame() {
